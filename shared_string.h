@@ -11,9 +11,10 @@
  * License: MIT License
  *
  * Uses std::shared_ptr internally to keep memory allocation to a minimum.
- * This is a boost-less implementation that uses shared_ptr.  An alternative 
- * to this approach is to use boost::flyweights.  You can outsmart it
- * and do things inefficiently if you try hard enough.  
+ * This is a boost-less implementation that does not use boost::flyweights.
+ * That means that if you try hard enough you can outsmart it and do
+ * things very ineffeciently.
+ *
  * But!  If you embrace it, you get all the same methods that basic_string
  * has (as of C++11), and you get a true shared string and it's thread-safe.
  * Missing methods from basic_string: reserve(), capacity(), shrink_to_fit().

@@ -28,4 +28,4 @@ Sure.  But it doesn’t help you if, for instance, you want to use those strings
 
 ### Couldn’t I use boost::const_string?
 
-You bet! And you should. But that’s not the use case here.
+You bet! And you should. But this has different semantics - if you initialize a shared_string with a const char *, a copy is made, and the shared_string takes ownership of that copy, just like std::string, except that copying shared_strings doesn’t allocate new strings.

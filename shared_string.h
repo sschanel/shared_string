@@ -1,19 +1,19 @@
 #pragma once
 
-#ifndef _STRING_REF_H_INCLUDED_
-#define _STRING_REF_H_INCLUDED_
+#ifndef _SHARED_STRING_H_INCLUDED_
+#define _SHARED_STRING_H_INCLUDED_
 
 /**
- * basic_string_ref
+ * basic_shared_string
  *
- * Copyright (c) 2015 Scott Schanel http://github.com/sschanel/string_ref
+ * Copyright (c) 2015 Scott Schanel http://github.com/sschanel/shared_string
  *
  * License: MIT License
  *
  * Uses std::shared_ptr internally to keep memory allocation to a minimum.
- * An alternative to this approach is to use boost::flyweights.  This is a
- * boost-less possibly oversimplistic implementation.  You can outsmart it
- * and do things inefficiently if you try hard enough.
+ * This is a boost-less implementation that uses shared_ptr.  An alternative 
+ * to this approach is to use boost::flyweights.  You can outsmart it
+ * and do things inefficiently if you try hard enough.  
  * But!  If you embrace it, you get all the same methods that basic_string
  * has (as of C++11), and you get a true shared string and it's thread-safe.
  * Missing methods from basic_string: reserve(), capacity(), shrink_to_fit().
@@ -38,7 +38,7 @@ template <typename CharT,
 class Traits = std::char_traits<CharT>,
 class Allocator = std::allocator < CharT >
 >
-class basic_string_ref {
+class basic_shared_string {
 
 public:
    typedef std::basic_string<CharT, Traits, Allocator> string_type;
@@ -69,22 +69,22 @@ public:
       return str();
    }
 
-   basic_string_ref() {
+   basic_shared_string() {
    }
 
-   basic_string_ref(const CharT * s) {
+   basic_shared_string(const CharT * s) {
       replace_contents(string_type(s));
    }
 
-   basic_string_ref(const string_type& s) {
+   basic_shared_string(const string_type& s) {
       replace_contents(string_type(s));
    }
 
-   basic_string_ref(string_type&& s) {
+   basic_shared_string(string_type&& s) {
       replace_contents(std::move(s));
    }
 
-   basic_string_ref(const basic_string_ref& s) {
+   basic_shared_string(const basic_shared_string& s) {
       string_ = s.string_;
    }
 
@@ -92,37 +92,37 @@ public:
       s.string_ = nullptr;
    }
 
-   basic_string_ref& operator=(const basic_string_ref& s) {
+   basic_shared_string& operator=(const basic_shared_string& s) {
       string_ = s.string_;
       return *this;
    }
 
-   basic_string_ref& operator=(const string_type& str) {
+   basic_shared_string& operator=(const string_type& str) {
       replace_contents(string_type(str));
       return *this;
    }
 
-   basic_string_ref& operator=(string_type&& str) {
+   basic_shared_string& operator=(string_type&& str) {
       replace_contents(std::move(str));
       return *this;
    }
 
-   basic_string_ref& operator=(const CharT* s) {
+   basic_shared_string& operator=(const CharT* s) {
       replace_contents(string_type(s));
       return *this;
    }
 
-   basic_string_ref& operator=(CharT ch) {
+   basic_shared_string& operator=(CharT ch) {
       replace_contents(string_type(ch));
       return *this;
    }
 
-   basic_string_ref& operator=(std::initializer_list<CharT> ilist) {
+   basic_shared_string& operator=(std::initializer_list<CharT> ilist) {
       replace_contents(string_type(ilist));
       return *this;
    }
 
-   void swap(basic_string_ref& rhs) {
+   void swap(basic_shared_string& rhs) {
       this->string_.swap(rhs.string_);
    }
 
@@ -205,7 +205,7 @@ public:
       return str().compare(rhs);
    }
 
-   int compare(const basic_string_ref& rhs) const {
+   int compare(const basic_shared_string& rhs) const {
       return str().compare(rhs.str());
    }
 
@@ -233,7 +233,7 @@ public:
       return str().compare(pos1, count1, s, count2);
    }
 
-   basic_string_ref<CharT> substr(
+   basic_shared_string<CharT> substr(
       size_type pos = 0,
       size_type count = npos) const {
 
@@ -245,7 +245,7 @@ public:
             return *this;
          }
       }
-      return basic_string_ref(str().substr(pos, count));
+      return basic_shared_string(str().substr(pos, count));
    }
 
    size_type copy(
@@ -349,44 +349,44 @@ public:
 
 template< class CharT, class Traits, class Alloc >
 bool operator==(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return lhs.str() == rhs.str();
 }
 
 template< class CharT, class Traits, class Alloc >
 bool operator!=(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return lhs.str() != rhs.str();
 }
 
 template< class CharT, class Traits, class Alloc >
 bool operator<(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return lhs.str() < rhs.str();
 }
 
 template< class CharT, class Traits, class Alloc >
 bool operator<=(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return lhs.str() <= rhs.str();
 }
 
 template< class CharT, class Traits, class Alloc >
 bool operator>(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
 
    return lhs.str() > rhs.str();
 }
 
 template< class CharT, class Traits, class Alloc >
 bool operator>=(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
 
    return lhs.str() >= rhs.str();
 }
@@ -394,65 +394,65 @@ bool operator>=(
 template< class CharT, class Traits, class Alloc >
 bool operator==(
    const CharT* lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return operator==(lhs, rhs.str());
 }
 
 template< class CharT, class Traits, class Alloc >
 bool operator==(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
    const CharT* rhs) {
 
    return operator==(lhs.str(), rhs);
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator!=(const CharT* lhs, const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+bool operator!=(const CharT* lhs, const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return operator!=(lhs, rhs.str());
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator!=(const basic_string_ref<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
+bool operator!=(const basic_shared_string<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
    return operator!=(lhs.str(), rhs);
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator<(const CharT* lhs, const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+bool operator<(const CharT* lhs, const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return operator<(lhs, rhs.str());
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator<(const basic_string_ref<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
+bool operator<(const basic_shared_string<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
    return operator<(lhs.str(), rhs);
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator<=(const CharT* lhs, const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+bool operator<=(const CharT* lhs, const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return operator<=(lhs, rhs.str());
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator<=(const basic_string_ref<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
+bool operator<=(const basic_shared_string<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
    return operator<=(lhs.str(), rhs);
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator>(const CharT* lhs, const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+bool operator>(const CharT* lhs, const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return operator>(lhs, rhs.str());
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator>(const basic_string_ref<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
+bool operator>(const basic_shared_string<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
    return operator>(lhs.str(), rhs);
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator>=(const CharT* lhs, const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+bool operator>=(const CharT* lhs, const basic_shared_string<CharT, Traits, Alloc>& rhs) {
    return operator>=(lhs, rhs.str());
 }
 
 template< class CharT, class Traits, class Alloc >
-bool operator>=(const basic_string_ref<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
+bool operator>=(const basic_shared_string<CharT, Traits, Alloc>& lhs, const CharT* rhs) {
    return operator>=(lhs.str(), rhs);
 }
 
@@ -460,14 +460,14 @@ bool operator>=(const basic_string_ref<CharT, Traits, Alloc>& lhs, const CharT* 
 template <class CharT, class Traits, class Allocator>
 std::basic_ostream<CharT, Traits>& operator<<(
    std::basic_ostream<CharT, Traits>& os,
-   const basic_string_ref<CharT, Traits, Allocator>& str) {
+   const basic_shared_string<CharT, Traits, Allocator>& str) {
    return operator<<(os, str.str());
 }
 
 template <class CharT, class Traits, class Allocator>
 std::basic_istream<CharT, Traits>& operator>>(
    std::basic_istream<CharT, Traits>& is,
-   basic_string_ref<CharT, Traits, Allocator>& str) {
+   basic_shared_string<CharT, Traits, Allocator>& str) {
 
    std::basic_string<CharT, Traits, Allocator> temp;
    operator>>(is, temp);
@@ -476,112 +476,110 @@ std::basic_istream<CharT, Traits>& operator>>(
 }
 
 template< class CharT, class Traits, class Alloc >
-basic_string_ref<CharT, Traits, Alloc> operator+(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs.str(), rhs.str()));
+basic_shared_string<CharT, Traits, Alloc> operator+(
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs.str(), rhs.str()));
 }
 
 template< class CharT, class Traits, class Alloc >
-basic_string_ref<CharT, Traits, Alloc> operator+(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
+basic_shared_string<CharT, Traits, Alloc> operator+(
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
    const std::basic_string<CharT, Traits, Alloc>& rhs) {
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs.str(), rhs));
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs.str(), rhs));
 }
 
 template< class CharT, class Traits, class Alloc >
-basic_string_ref<CharT, Traits, Alloc> operator+(
+basic_shared_string<CharT, Traits, Alloc> operator+(
    const std::basic_string<CharT, Traits, Alloc>& lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs, rhs.str()));
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs, rhs.str()));
 }
 
 template< class CharT, class Traits, class Alloc >
-basic_string_ref<CharT, Traits, Alloc> operator+(
+basic_shared_string<CharT, Traits, Alloc> operator+(
    const CharT* lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
 
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs, rhs.str()));
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs, rhs.str()));
 }
 
 template< class CharT, class Traits, class Alloc >
-basic_string_ref<CharT, Traits, Alloc> operator+(
+basic_shared_string<CharT, Traits, Alloc> operator+(
    CharT lhs,
-   const basic_string_ref<CharT, Traits, Alloc>& rhs) {
+   const basic_shared_string<CharT, Traits, Alloc>& rhs) {
 
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs, rhs.str()));
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs, rhs.str()));
 }
 
 template< class CharT, class Traits, class Alloc >
-basic_string_ref<CharT, Traits, Alloc> operator+(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
+basic_shared_string<CharT, Traits, Alloc> operator+(
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
    const CharT* rhs) {
 
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs.str(), rhs));
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs.str(), rhs));
 }
 
 template<class CharT, class Traits, class Alloc>
-basic_string_ref<CharT, Traits, Alloc> operator+(
-   const basic_string_ref<CharT, Traits, Alloc>& lhs,
+basic_shared_string<CharT, Traits, Alloc> operator+(
+   const basic_shared_string<CharT, Traits, Alloc>& lhs,
    CharT rhs) {
 
-   return basic_string_ref<CharT, Traits, Alloc>(operator+(lhs.str(), rhs));
+   return basic_shared_string<CharT, Traits, Alloc>(operator+(lhs.str(), rhs));
 }
 
 namespace std {
 
    template <class CharT, class Traits, class Alloc>
-   int stoi(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
+   int stoi(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
       return stoi(str.str(), pos, base);
    }
 
    template <class CharT, class Traits, class Alloc>
-   long stol(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
+   long stol(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
       return stol(str.str(), pos, base);
    }
 
    template <class CharT, class Traits, class Alloc>
-   long long stoll(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
+   long long stoll(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
       return stoll(str.str(), pos, base);
    }
 
    template <class CharT, class Traits, class Alloc>
-   unsigned long stoul(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
+   unsigned long stoul(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
       return stoul(str.str(), pos, base);
    }
 
    template <class CharT, class Traits, class Alloc>
-   unsigned long long stoull(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
+   unsigned long long stoull(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0, int base = 10) {
       return stoull(str.str(), pos, base);
    }
 
    template <class CharT, class Traits, class Alloc>
-   float stof(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0) {
+   float stof(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0) {
       return stof(str.str(), pos);
    }
 
    template <class CharT, class Traits, class Alloc>
-   double stod(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0) {
+   double stod(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0) {
       return stod(str.str(), pos);
    }
 
    template <class CharT, class Traits, class Alloc>
-   double stold(const basic_string_ref<CharT, Traits, Alloc>& str, std::size_t* pos = 0) {
+   double stold(const basic_shared_string<CharT, Traits, Alloc>& str, std::size_t* pos = 0) {
       return stold(str.str(), pos);
    }
 
    template <class CharT>
-   struct hash < basic_string_ref<CharT> > {
-      size_t operator()(const basic_string_ref<CharT>& key) {
+   struct hash < basic_shared_string<CharT> > {
+      size_t operator()(const basic_shared_string<CharT>& key) {
          return hash<std::string>()(key.str());
       }
    };
 }
 
-typedef basic_string_ref<char> string_ref;
-typedef basic_string_ref<wchar_t> wstring_ref;
-
-
+typedef basic_shared_string<char> shared_string;
+typedef basic_shared_string<wchar_t> shared_wstring;
 
 
 #endif // _STRING_REF_H_INCLUDED_

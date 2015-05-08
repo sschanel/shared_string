@@ -24,8 +24,8 @@ Note that you still get operator=() and clear().
 
 ### Couldn’t I just use const std::string&?  
 
-Sure.  But it doesn’t help you if, for instance, you want to use those strings as keys in maps.  It’s nice though when you can create lots of std::map<shared_string, MyType>’s and not incur a penalty for repeating the keys over and over again.
+Sure.  But it doesn’t help you if, for instance, you want to use those strings as keys in maps.  shared_string allows you to create lots of std::map<shared_string, MyType>’s and not incur a penalty for repeating the keys over and over again.
 
 ### Couldn’t I use boost::const_string?
 
-You bet! And you should. But this has different semantics - if you initialize a shared_string with a const char *, a copy is made, and the shared_string takes ownership of that copy, just like std::string, except that copying shared_strings doesn’t allocate new strings.
+You bet! And you should. But this has different semantics - if you initialize a shared_string with a const char *, a copy is made, and the shared_string takes ownership of that copy - just like std::string.  Just like std::string except that copying a shared_string doesn’t allocate new buffers.
